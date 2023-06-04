@@ -134,6 +134,12 @@ const CanvasComponent = () => {
     context.current.beginPath();
   }
 
+  function erase() {
+	const context = canvasRef.current.getContext('2d');
+	context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+}
+
+
   let lastX = 0;
 let lastY = 0;
 
@@ -222,6 +228,7 @@ let lastY = 0;
 				<input type="text" value={translation} onChange={e => setTranslation(e.target.value)} placeholder="English translation"/>
 				<button onClick={saveDrawing}>Save Drawing</button>
 			</div>
+			<button onClick={erase}>Erase</button>
 		</div>
 	);
 };

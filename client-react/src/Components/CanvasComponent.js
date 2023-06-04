@@ -8,6 +8,41 @@ function CanvasComponent() {
   let context = null;
   let draw = false;
 
+  touchStartHandler = (event) => {
+    const touch = event.touches[0];
+    const mouseEvent = new MouseEvent("mousedown", {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.canvasRef.current.dispatchEvent(mouseEvent);
+  };
+
+  touchMoveHandler = (event) => {
+    const touch = event.touches[0];
+    const mouseEvent = new MouseEvent("mousemove", {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.canvasRef.current.dispatchEvent(mouseEvent);
+  };
+
+  touchEndHandler = (event) => {
+    const mouseEvent = new MouseEvent("mouseup", {});
+    this.canvasRef.current.dispatchEvent(mouseEvent);
+  };
+
+  componentDidMount() {
+    canvas.addEventListener("touchstart", this.touchStartHandler);
+    canvas.addEventListener("touchmove", this.touchMoveHandler);
+    canvas.addEventListener("touchend", this.touchEndHandler);
+  }
+
+  componentWillUnmount() {
+    canvas.removeEventListener("touchstart", this.touchStartHandler);
+    canvas.removeEventListener("touchmove", this.touchMoveHandler);
+    canvas.removeEventListener("touchend", this.touchEndHandler);
+  }
+
   // Handles mousedown event
   const startDrawing = (event) => {
     draw = true;

@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3001;
+require('dotenv').config()
 const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid');
@@ -70,6 +70,4 @@ app.post('/api/save', (req, res) => {
   });
   
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+app.listen(process.env.PORT);

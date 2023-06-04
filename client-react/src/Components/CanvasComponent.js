@@ -97,8 +97,10 @@
 // export default CanvasComponent;
 
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import "./CanvasComponent.css";
+import Search from './Search';
+import { Link } from "react-router-dom";
 
 const CanvasComponent = () => {
   const canvasRef = useRef(null);
@@ -131,6 +133,32 @@ const CanvasComponent = () => {
     context.current.moveTo(x, y);
   }
 
+	const [translation, setTranslation] = useState('');
+
+	const saveDrawing = () => {
+		const dataUrl = canvasRef.current.toDataURL();
+
+		fetch('/api/save', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ base64String: dataUrl, translation })
+		}).then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		}).then(data => {
+		// The save was successful
+		}).catch(error => {
+			console.error('There was a problem with the fetch operation:', error);
+		});
+		// Clear the canvas
+		const context = canvasRef.current.getContext('2d');
+		context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+	};
+
   useEffect(() => {
     const canvas = canvasRef.current;
     context.current = canvas.getContext('2d');  
@@ -156,7 +184,16 @@ const CanvasComponent = () => {
     };
   }, []);
 
-  return <canvas width="500" height="500" ref={canvasRef} />;
+	return (
+		<div className="content">
+			<Link to="/">Search</Link>
+			<canvas ref={canvasRef} width={500} height={500} />
+			<div className="form-wrapper">
+				<input type="text" value={translation} onChange={e => setTranslation(e.target.value)} placeholder="English translation"/>
+				<button onClick={saveDrawing}>Save Drawing</button>
+			</div>
+		</div>
+	);
 };
 
 export default CanvasComponent;

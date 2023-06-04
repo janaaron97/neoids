@@ -1,39 +1,43 @@
 // import React, { useRef, useEffect, useState } from 'react';
+// import "./CanvasComponent.css";
 // import Search from './Search';
 // import { Link } from "react-router-dom";
-// import "./CanvasComponent.css";
 
-// function CanvasComponent() {
-// 	const canvasRef = useRef(null);
-// 	let context = null;
-// 	let draw = false;
+// const CanvasComponent = () => {
+//   const canvasRef = useRef(null);
+//   const context = useRef(null);  
+//   let isDrawing = false;
 
-// 	// Handles mousedown event
-// 	const startDrawing = (event) => {
-// 		draw = true;
-// 		drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, false);
-// 	};
+//   function startDraw(e) {
+//     isDrawing = true;
+//     e.preventDefault();
+//     draw(e);
+//   }
 
-// 	// Handles mouseup and mouseout events
-// 	const stopDrawing = () => {
-// 		draw = false;
-// 		context.beginPath();
-// 	};
+//   function endDraw() {
+//     isDrawing = false;
+//     context.current.beginPath();
+//   }
 
-// 	// Handles mousemove event
-// 	const drawLine = (x, y, isDrawing) => { 
-// 		if (!draw) return;
-// 		context.lineWidth = 2;
-// 		context.lineCap = 'round';
-// 		context.strokeStyle = '#000';
+//   function draw(e) {
+//     if (!isDrawing) return;
+//     const { clientX, clientY } = e.type.includes('touch') ? e.touches[0] : e;
 
-// 		context.lineTo(x, y);
-// 		if (isDrawing) {
-// 			context.stroke();
-// 		}
-// 		context.beginPath();
-// 		context.moveTo(x, y);
-// 	};
+//     const canvasPos = canvasRef.current.getBoundingClientRect();
+//     const scaleX = canvasRef.current.width / canvasPos.width;
+//     const scaleY = canvasRef.current.height / canvasPos.height;
+
+//     const scrollX = window.scrollX || window.pageXOffset;
+//     const scrollY = window.scrollY || window.pageYOffset;
+
+//     const xPos = (clientX - canvasPos.left + scrollX) * scaleX;
+//     const yPos = (clientY - canvasPos.top + scrollY) * scaleY;
+
+//     context.current.lineTo(xPos, yPos);
+//     context.current.stroke();
+//     context.current.beginPath();
+//     context.current.moveTo(xPos, yPos);
+//   }
 
 // 	const [translation, setTranslation] = useState('');
 
@@ -61,26 +65,35 @@
 // 		context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 // 	};
 
-// 	useEffect(() => {
-// 		const canvas = canvasRef.current;
-// 		context = canvas.getContext('2d');
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     context.current = canvas.getContext('2d');  
 
-// 		// Event listeners
-// 		canvas.addEventListener('mousedown', startDrawing);
-// 		canvas.addEventListener('mouseup', stopDrawing);
-// 		canvas.addEventListener('mouseout', stopDrawing);
-// 		canvas.addEventListener('mousemove', (event) =>
-// 			drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, true)
-// 		);
+//     // Make the line thicker
+//     context.current.lineWidth = 10;
+// 	context.current.lineCap = 'round';
+// 	context.current.lineJoin = 'round';
 
-// 		return () => {
-// 			// Clean up
-// 			canvas.removeEventListener('mousedown', startDrawing);
-// 			canvas.removeEventListener('mouseup', stopDrawing);
-// 			canvas.removeEventListener('mouseout', stopDrawing);
-// 			canvas.removeEventListener('mousemove', drawLine);
-// 		};
-// 	}, []);
+//     canvas.addEventListener('mousedown', startDraw);
+//     canvas.addEventListener('mousemove', draw);
+//     canvas.addEventListener('mouseup', endDraw);
+//     canvas.addEventListener('mouseout', endDraw);
+
+//     canvas.addEventListener('touchstart', startDraw, { passive: false });
+//     canvas.addEventListener('touchmove', draw, { passive: false });
+//     canvas.addEventListener('touchend', endDraw);
+
+//     return () => {
+//       canvas.removeEventListener('mousedown', startDraw);
+//       canvas.removeEventListener('mousemove', draw);
+//       canvas.removeEventListener('mouseup', endDraw);
+//       canvas.removeEventListener('mouseout', endDraw);
+
+//       canvas.removeEventListener('touchstart', startDraw);
+//       canvas.removeEventListener('touchmove', draw);
+//       canvas.removeEventListener('touchend', endDraw);
+//     };
+//   }, []);
 
 // 	return (
 // 		<div className="content">
@@ -92,7 +105,7 @@
 // 			</div>
 // 		</div>
 // 	);
-// }
+// };
 
 // export default CanvasComponent;
 
@@ -110,7 +123,10 @@ const CanvasComponent = () => {
   function startDraw(e) {
     isDrawing = true;
     e.preventDefault();
-    draw(e);
+    isDrawing = true;
+    const rect = canvasRef.current.getBoundingClientRect();
+    lastX = (e.clientX || e.touches[0].clientX) - rect.left;
+    lastY = (e.clientY || e.touches[0].clientY) - rect.top;
   }
 
   function endDraw() {
@@ -118,24 +134,28 @@ const CanvasComponent = () => {
     context.current.beginPath();
   }
 
+  let lastX = 0;
+let lastY = 0;
+
   function draw(e) {
     if (!isDrawing) return;
-    const { clientX, clientY } = e.type.includes('touch') ? e.touches[0] : e;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.touches ? e.touches[0].clientX - rect.left + window.scrollX : e.clientX - rect.left + window.scrollX;
+    const y = e.touches ? e.touches[0].clientY - rect.top + window.scrollY : e.clientY - rect.top + window.scrollY;
 
-    const canvasPos = canvasRef.current.getBoundingClientRect();
-    const scaleX = canvasRef.current.width / canvasPos.width;
-    const scaleY = canvasRef.current.height / canvasPos.height;
+    context.current.lineWidth = 10;
+    context.current.lineCap = "round";
+    context.current.strokeStyle = 'black';
 
-    const scrollX = window.scrollX || window.pageXOffset;
-    const scrollY = window.scrollY || window.pageYOffset;
-
-    const xPos = (clientX - canvasPos.left + scrollX) * scaleX;
-    const yPos = (clientY - canvasPos.top + scrollY) * scaleY;
-
-    context.current.lineTo(xPos, yPos);
-    context.current.stroke();
     context.current.beginPath();
-    context.current.moveTo(xPos, yPos);
+    // Start from the last point
+    context.current.moveTo(lastX, lastY);
+    // Draw a curve to the new point
+    context.current.quadraticCurveTo(lastX, lastY, x, y);
+    context.current.stroke();
+
+    lastX = x;
+    lastY = y;
   }
 
 	const [translation, setTranslation] = useState('');
@@ -168,6 +188,11 @@ const CanvasComponent = () => {
     const canvas = canvasRef.current;
     context.current = canvas.getContext('2d');  
 
+    // Make the line thicker
+    context.current.lineWidth = 10;
+	context.current.lineCap = 'round';
+	context.current.lineJoin = 'round';
+
     canvas.addEventListener('mousedown', startDraw);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', endDraw);
@@ -192,7 +217,7 @@ const CanvasComponent = () => {
 	return (
 		<div className="content">
 			<Link to="/">Search</Link>
-			<canvas ref={canvasRef} width={500} height={500} />
+			<canvas ref={canvasRef} width={300} height={300} />
 			<div className="form-wrapper">
 				<input type="text" value={translation} onChange={e => setTranslation(e.target.value)} placeholder="English translation"/>
 				<button onClick={saveDrawing}>Save Drawing</button>
@@ -202,3 +227,4 @@ const CanvasComponent = () => {
 };
 
 export default CanvasComponent;
+

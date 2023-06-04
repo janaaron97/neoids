@@ -65,8 +65,9 @@ app.post('/api/save', (req, res) => {
     res.json(results);
   });
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+  app.get('*', function (req, res) {
+    const index = path.join(__dirname, '../client/build', 'index.html');
+    res.sendFile(index);
   });
   
 

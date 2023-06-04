@@ -27,12 +27,14 @@ const SearchPageComponent = () => {
     <div>
       <input type="text" value={search} onChange={handleSearch} placeholder="Search translations..." />
 
+      <div className="results">
       {filteredImages.map((image, index) => (
         <div className="result" key={index}>
           <img className="glyph" src={image.imageUrl} alt={image.translation} />
           <p>{image.translation}</p>
         </div>
       ))}
+      </div>
     </div>
   );
 };

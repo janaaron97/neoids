@@ -1,13 +1,14 @@
 .result {
     display: flex;
     margin-bottom: 20px;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
 .result .glyph {
     max-width:200px;
     background:white;
+    border-radius: 10px;
 }
 
 .result p {
@@ -17,4 +18,24 @@
 
 .glyph-list {
     margin-top: 20px;
+}
+
+input[type="text"] {
+    padding:10px 20px;
+}
+
+.results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 20px;
+    grid-gap:20px;
+}
+
+@media screen and (max-width:700px) {
+    .results {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .result .glyph {
+        max-width:90px
+    }
 }

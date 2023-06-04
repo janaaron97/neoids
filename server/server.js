@@ -41,7 +41,8 @@ app.post('/api/save', (req, res) => {
   app.get('/api/searchAll', (req, res) => {
     // Load the glyphs.json file
     const rawdata = fs.readFileSync(path.resolve(__dirname, './glyphs.json'));
-    const glyphs = JSON.parse(rawdata);
+    const glyphs = JSON.parse(rawdata).sort((a, b) => a.translation.localeCompare(b.translation));
+
   
     res.json(glyphs);
   });

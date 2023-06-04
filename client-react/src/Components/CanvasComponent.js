@@ -4,139 +4,106 @@ import { Link } from "react-router-dom";
 import "./CanvasComponent.css";
 
 function CanvasComponent() {
-  const canvasRef = useRef(null);
-  let context = null;
-  let draw = false;
+	const canvasRef = useRef(null);
+	let context = null;
+	let draw = false;
 
-  const touchStartHandler = (event) => {
-    const touch = event.touches[0];
-    const mouseEvent = new MouseEvent("mousedown", {
-      clientX: touch.clientX,
-      clientY: touch.clientY
-    });
-    canvasRef.current.dispatchEvent(mouseEvent);
-  };
+	// Handles mousedown event
+	const startDrawing = (event) => {
+		draw = true;
+		drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, false);
+	};
 
-  const touchMoveHandler = (event) => {
-    const touch = event.touches[0];
-    const mouseEvent = new MouseEvent("mousemove", {
-      clientX: touch.clientX,
-      clientY: touch.clientY
-    });
-    canvasRef.current.dispatchEvent(mouseEvent);
-  };
+	// Handles mouseup and mouseout events
+	const stopDrawing = () => {
+		draw = false;
+		context.beginPath();
+	};
 
-  const touchEndHandler = (event) => {
-    const mouseEvent = new MouseEvent("mouseup", {});
-    canvasRef.current.dispatchEvent(mouseEvent);
-  };
+	// Handles mousemove event
+	const drawLine = (x, y, isDrawing) => { 
+		if (!draw) return;
+		context.lineWidth = 2;
+		context.lineCap = 'round';
+		context.strokeStyle = '#000';
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    context = canvas.getContext('2d');
-    canvas.addEventListener("touchstart", touchStartHandler);
-    canvas.addEventListener("touchmove", touchMoveHandler);
-    canvas.addEventListener("touchend", touchEndHandler);
+		context.lineTo(x, y);
+		if (isDrawing) {
+			context.stroke();
+		}
+		context.beginPath();
+		context.moveTo(x, y);
+	};
 
-    return () => { // This will run when the component unmounts
-      canvas.removeEventListener("touchstart", touchStartHandler);
-      canvas.removeEventListener("touchmove", touchMoveHandler);
-      canvas.removeEventListener("touchend", touchEndHandler);
-    }
-  }, []);
+	const [translation, setTranslation] = useState('');
 
-  // Handles mousedown event
-  const startDrawing = (event) => {
-    draw = true;
-    drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, false);
-  };
+	const saveDrawing = () => {
+		const dataUrl = canvasRef.current.toDataURL();
 
-  // Handles mouseup and mouseout events
-  const stopDrawing = () => {
-    draw = false;
-    context.beginPath();
-  };
+		fetch('/api/save', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ base64String: dataUrl, translation })
+		}).then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		}).then(data => {
+		// The save was successful
+		}).catch(error => {
+			console.error('There was a problem with the fetch operation:', error);
+		});
+		// Clear the canvas
+		const context = canvasRef.current.getContext('2d');
+		context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+	};
 
-  // Handles mousemove event
-  const drawLine = (x, y, isDrawing) => { 
-    if (!draw) return;
-    context.lineWidth = 2;
-    context.lineCap = 'round';
-    context.strokeStyle = '#000';
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		context = canvas.getContext('2d');
 
-    context.lineTo(x, y);
-    if (isDrawing) {
-      context.stroke();
-    }
-    context.beginPath();
-    context.moveTo(x, y);
-  };
+		// Event listeners
+		canvas.addEventListener('mousedown', startDrawing);
+		canvas.addEventListener('mouseup', stopDrawing);
+		canvas.addEventListener('mouseout', stopDrawing);
+		canvas.addEventListener('mousemove', (event) =>
+			drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, true)
+		);
 
-  const [translation, setTranslation] = useState('');
+		canvas.addEventListener('touchstart', startDrawing, { passive: false });
+		canvas.addEventListener('touchend', stopDrawing);
+		canvas.addEventListener('touchmove', (event) =>
+			drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, true)
+		);
 
-  const saveDrawing = () => {
-    const dataUrl = canvasRef.current.toDataURL();
-  
-  fetch('/api/save', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ base64String: dataUrl, translation })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    // The save was successful
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error);
-  });
-  // Clear the canvas
-  const context = canvasRef.current.getContext('2d');
-  context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-  };
+		return () => {
+			// Clean up
+			canvas.removeEventListener('mousedown', startDrawing);
+			canvas.removeEventListener('mouseup', stopDrawing);
+			canvas.removeEventListener('mouseout', stopDrawing);
+			canvas.removeEventListener('mousemove', drawLine);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    context = canvas.getContext('2d');
+			canvas.addEventListener('touchstart', startDrawing, { passive: false });
+			canvas.addEventListener('touchend', stopDrawing);
+			canvas.addEventListener('touchmove', (event) =>
+				drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, true)
+			);
+		};
+	}, []);
 
-    // Event listeners
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
-    canvas.addEventListener('mousemove', (event) =>
-      drawLine(event.clientX - event.target.offsetLeft, event.clientY - event.target.offsetTop, true)
-    );
-
-    return () => {
-      // Clean up
-      canvas.removeEventListener('mousedown', startDrawing);
-      canvas.removeEventListener('mouseup', stopDrawing);
-      canvas.removeEventListener('mouseout', stopDrawing);
-      canvas.removeEventListener('mousemove', drawLine);
-    };
-  }, []);
-
-  return (
-    <div className="content">
-      <Link to="/">Search</Link>
-      <canvas ref={canvasRef} width={500} height={500} />
-      <div className="form-wrapper">
-        <input 
-        type="text" 
-        value={translation} 
-        onChange={e => setTranslation(e.target.value)} 
-        placeholder="English translation"
-      />
-        <button onClick={saveDrawing}>Save Drawing</button>
-      </div>
-    </div>
-  );
+	return (
+		<div className="content">
+			<Link to="/">Search</Link>
+			<canvas ref={canvasRef} width={500} height={500} />
+			<div className="form-wrapper">
+				<input type="text" value={translation} onChange={e => setTranslation(e.target.value)} placeholder="English translation"/>
+				<button onClick={saveDrawing}>Save Drawing</button>
+			</div>
+		</div>
+	);
 }
 
 export default CanvasComponent;

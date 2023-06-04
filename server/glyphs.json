@@ -1,0 +1,26 @@
+[
+  {
+    "imageUrl": "/images/man.png",
+    "translation": "man"
+  },
+  {
+    "imageUrl": "/images/star.png",
+    "translation": "star"
+  },
+  {
+    "imageUrl": "/images/thing.png",
+    "translation": "thing"
+  },
+  {
+    "imageUrl": "/images/black.png",
+    "translation": "black"
+  },
+  {
+    "imageUrl": "/images/sphere.png",
+    "translation": "sphere"
+  },
+  {
+    "imageUrl": "/images/mountain.png",
+    "translation": "mountain"
+  }
+]

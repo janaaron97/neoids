@@ -1,0 +1,20 @@
+.result {
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.result .glyph {
+    max-width:200px;
+    background:white;
+}
+
+.result p {
+    margin-left: 20px;
+    font-size: 25px;
+}
+
+.glyph-list {
+    margin-top: 20px;
+}

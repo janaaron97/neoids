@@ -1,0 +1,24 @@
+body {
+    background:rgb(206, 237, 237);
+    display: flex;
+}
+
+canvas {
+    background:white;
+    /* width:90%;
+    height:60vh;
+    min-height:400px; */
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    width:100vw;
+}
+
+.form-wrapper {
+    display: flex;
+    margin-top: 2em;
+}

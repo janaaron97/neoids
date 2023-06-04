@@ -9,7 +9,7 @@ const cors = require('cors');
 // This line is necessary to be able to process POST request data
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, '../client-react/build')));
 
 app.post('/api/save', (req, res) => {
     const { base64String, translation } = req.body;
@@ -66,7 +66,7 @@ app.post('/api/save', (req, res) => {
   });
 
   app.get('*', function (req, res) {
-    const index = path.join(__dirname, '../client/build', 'index.html');
+    const index = path.join(__dirname, '../client-react/build', 'index.html');
     res.sendFile(index);
   });
   

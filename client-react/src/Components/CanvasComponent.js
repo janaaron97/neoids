@@ -8,40 +8,42 @@ function CanvasComponent() {
   let context = null;
   let draw = false;
 
-  touchStartHandler = (event) => {
+  const touchStartHandler = (event) => {
     const touch = event.touches[0];
     const mouseEvent = new MouseEvent("mousedown", {
       clientX: touch.clientX,
       clientY: touch.clientY
     });
-    this.canvasRef.current.dispatchEvent(mouseEvent);
+    canvasRef.current.dispatchEvent(mouseEvent);
   };
 
-  touchMoveHandler = (event) => {
+  const touchMoveHandler = (event) => {
     const touch = event.touches[0];
     const mouseEvent = new MouseEvent("mousemove", {
       clientX: touch.clientX,
       clientY: touch.clientY
     });
-    this.canvasRef.current.dispatchEvent(mouseEvent);
+    canvasRef.current.dispatchEvent(mouseEvent);
   };
 
-  touchEndHandler = (event) => {
+  const touchEndHandler = (event) => {
     const mouseEvent = new MouseEvent("mouseup", {});
-    this.canvasRef.current.dispatchEvent(mouseEvent);
+    canvasRef.current.dispatchEvent(mouseEvent);
   };
 
-  componentDidMount() {
-    canvas.addEventListener("touchstart", this.touchStartHandler);
-    canvas.addEventListener("touchmove", this.touchMoveHandler);
-    canvas.addEventListener("touchend", this.touchEndHandler);
-  }
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    context = canvas.getContext('2d');
+    canvas.addEventListener("touchstart", touchStartHandler);
+    canvas.addEventListener("touchmove", touchMoveHandler);
+    canvas.addEventListener("touchend", touchEndHandler);
 
-  componentWillUnmount() {
-    canvas.removeEventListener("touchstart", this.touchStartHandler);
-    canvas.removeEventListener("touchmove", this.touchMoveHandler);
-    canvas.removeEventListener("touchend", this.touchEndHandler);
-  }
+    return () => { // This will run when the component unmounts
+      canvas.removeEventListener("touchstart", touchStartHandler);
+      canvas.removeEventListener("touchmove", touchMoveHandler);
+      canvas.removeEventListener("touchend", touchEndHandler);
+    }
+  }, []);
 
   // Handles mousedown event
   const startDrawing = (event) => {
@@ -56,7 +58,7 @@ function CanvasComponent() {
   };
 
   // Handles mousemove event
-  const drawLine = (x, y, isDrawing) => {
+  const drawLine = (x, y, isDrawing) => { 
     if (!draw) return;
     context.lineWidth = 2;
     context.lineCap = 'round';

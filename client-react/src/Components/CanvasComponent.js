@@ -102,11 +102,12 @@ import "./CanvasComponent.css";
 
 const CanvasComponent = () => {
   const canvasRef = useRef(null);
-  const context = useRef(null);  // Here we are defining context.
+  const context = useRef(null);  
   let isDrawing = false;
 
   function startDraw(e) {
     isDrawing = true;
+    e.preventDefault();
     draw(e);
   }
 
@@ -118,15 +119,21 @@ const CanvasComponent = () => {
   function draw(e) {
     if (!isDrawing) return;
     const { clientX, clientY } = e.type.includes('touch') ? e.touches[0] : e;
-    context.current.lineTo(clientX, clientY);
+    
+    // Adjust coordinates by canvas position
+    const canvasPos = canvasRef.current.getBoundingClientRect();
+    const x = clientX - canvasPos.left;
+    const y = clientY - canvasPos.top;
+
+    context.current.lineTo(x, y);
     context.current.stroke();
     context.current.beginPath();
-    context.current.moveTo(clientX, clientY);
+    context.current.moveTo(x, y);
   }
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    context.current = canvas.getContext('2d');  // Now context is getting assigned here
+    context.current = canvas.getContext('2d');  
 
     canvas.addEventListener('mousedown', startDraw);
     canvas.addEventListener('mousemove', draw);

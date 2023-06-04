@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client-react && npm install && npm run build"
   },
   "keywords": [],
   "author": "",

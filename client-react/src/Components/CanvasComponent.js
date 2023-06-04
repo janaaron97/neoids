@@ -121,16 +121,21 @@ const CanvasComponent = () => {
   function draw(e) {
     if (!isDrawing) return;
     const { clientX, clientY } = e.type.includes('touch') ? e.touches[0] : e;
-    
-    // Adjust coordinates by canvas position
-    const canvasPos = canvasRef.current.getBoundingClientRect();
-    const x = clientX - canvasPos.left;
-    const y = clientY - canvasPos.top;
 
-    context.current.lineTo(x, y);
+    const canvasPos = canvasRef.current.getBoundingClientRect();
+    const scaleX = canvasRef.current.width / canvasPos.width;
+    const scaleY = canvasRef.current.height / canvasPos.height;
+
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    const xPos = (clientX - canvasPos.left + scrollX) * scaleX;
+    const yPos = (clientY - canvasPos.top + scrollY) * scaleY;
+
+    context.current.lineTo(xPos, yPos);
     context.current.stroke();
     context.current.beginPath();
-    context.current.moveTo(x, y);
+    context.current.moveTo(xPos, yPos);
   }
 
 	const [translation, setTranslation] = useState('');

@@ -4,10 +4,7 @@ body {
 }
 
 canvas {
-    background:white;
-    /* width:90%;
-    height:60vh;
-    min-height:400px; */
+    background:#ffffff;
     border:1px solid #333;
 }
 
@@ -16,10 +13,17 @@ canvas {
     align-items: center;
     justify-content: center;
     flex-direction:column;
-    width:100vw;
+    width:100%;
 }
 
 .form-wrapper {
     display: flex;
     margin-top: 2em;
+}
+
+@media screen and (max-width:700px) {
+    canvas {
+        width:90%;
+        height:60vh;
+    }
 }

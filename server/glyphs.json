@@ -26,5 +26,25 @@
   {
     "imageUrl": "/images/none.png",
     "translation": "none"
+  },
+  {
+    "imageUrl": "https://neiods.s3.us-east-2.amazonaws.com/circle.png",
+    "translation": "circle"
+  },
+  {
+    "imageUrl": "https://neiods.s3.us-east-2.amazonaws.com/circle.png",
+    "translation": "circle"
+  },
+  {
+    "imageUrl": "https://neiods.s3.us-east-2.amazonaws.com/after.png",
+    "translation": "after"
+  },
+  {
+    "imageUrl": "https://neiods.s3.us-east-2.amazonaws.com/act.png",
+    "translation": "act"
+  },
+  {
+    "imageUrl": "https://neiods.s3.us-east-2.amazonaws.com/circle.png",
+    "translation": "circle"
   }
 ]

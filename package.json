@@ -1,7 +1,7 @@
 {
   "name": "neoids",
   "version": "1.0.0",
-  "engines": { 
+  "engines": {
     "node": "16.5.0"
   },
   "description": "",
@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1391.0",
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",

@@ -33,7 +33,7 @@ input[type="text"] {
 
 @media screen and (max-width:700px) {
     .results {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(1, 1fr);
     }
     .result .glyph {
         max-width:90px
